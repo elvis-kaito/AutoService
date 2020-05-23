@@ -8,7 +8,6 @@ import android.content.Intent;
 import android.os.IBinder;
 import android.os.SystemClock;
 import android.util.Log;
-import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 import androidx.core.app.NotificationCompat;
@@ -51,9 +50,12 @@ public class AutoService extends Service {
         new Thread(new Runnable() {
             @Override
             public void run() {
-                Log.d("nam.tx2", "sleep");
-                SystemClock.sleep(10 * 1000);
-                Log.d("nam.tx2", "wakeup");
+                int count = 0;
+                while (true) {
+                    count++;
+                    Log.d("nam.tx2", "run: " + count);
+                    SystemClock.sleep(60 * 1000);
+                }
             }
         }).start();
         return super.onStartCommand(intent, flags, startId);

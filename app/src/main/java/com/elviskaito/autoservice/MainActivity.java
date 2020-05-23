@@ -1,8 +1,9 @@
 package com.elviskaito.autoservice;
 
+import android.app.ActivityManager;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -14,16 +15,30 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        findViewById(R.id.text).setOnClickListener(new View.OnClickListener() {
-            int count = 0;
+
+        findViewById(R.id.btn1).setOnClickListener(new View.OnClickListener() {
+            Intent serviceIntent = new Intent(MainActivity.this, AutoService.class);
+            boolean isRunning = isMyServiceRunning(AutoService.class);
 
             @Override
             public void onClick(View v) {
-                count++;
-                Log.d("nam.tx2", "MainActivity: clicked " + count);
+                if (isRunning)
+                    stopService(serviceIntent);
+                else
+                    ContextCompat.startForegroundService(MainActivity.this, serviceIntent);
+
+                isRunning = !isRunning;
             }
         });
+    }
 
-        ContextCompat.startForegroundService(this, new Intent(this, AutoService.class));
+    private boolean isMyServiceRunning(Class<?> serviceClass) {
+        ActivityManager manager = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
+        for (ActivityManager.RunningServiceInfo service : manager.getRunningServices(Integer.MAX_VALUE)) {
+            if (serviceClass.getName().equals(service.service.getClassName())) {
+                return true;
+            }
+        }
+        return false;
     }
 }
